@@ -427,8 +427,17 @@ class HtmlToDocx(HTMLParser):
             self.paragraph = self.doc.add_paragraph()
             self.apply_paragraph_style()
 
+        if tag in ['mark']:
+            self.paragraph = self.doc.add_paragraph()
+        
+        if tag in ['blockquote']:
+            self.paragraph = self.doc.add_paragraph()
+            self.paragraph.paragraph_format.left_indent = Inches(1)
+
         elif tag == 'li':
             self.handle_li()
+
+            
 
         elif tag == "hr":
 
@@ -472,6 +481,7 @@ class HtmlToDocx(HTMLParser):
         # set new run reference point in case of leading line breaks
         if tag in ['p', 'li', 'pre']:
             self.run = self.paragraph.add_run()
+
 
         # add style
         if not self.include_styles:
@@ -523,6 +533,7 @@ class HtmlToDocx(HTMLParser):
             self.paragraph = self.doc.add_paragraph()
             self.apply_paragraph_style()
 
+      
         # There can only be one nested link in a valid html document
         # You cannot have interactive content in an A tag, this includes links
         # https://html.spec.whatwg.org/#interactive-content
@@ -540,6 +551,7 @@ class HtmlToDocx(HTMLParser):
 
             # add font style and name
             for tag in self.tags:
+                
                 if tag in font_styles:
                     font_style = font_styles[tag]
                     setattr(self.run.font, font_style, True)
@@ -547,6 +559,14 @@ class HtmlToDocx(HTMLParser):
                 if tag in font_names:
                     font_name = font_names[tag]
                     self.run.font.name = font_name
+
+                if tag == 'mark':
+                    self.run.font.highlight_color = 7 
+                if tag == 'blockquote':
+                    self.run.font.italic = True
+                    self.paragraph.paragraph_format.left_indent = Inches(1)
+                    self.paragraph.paragraph_format.space_after = Pt(0)
+                    self.run.font.size = Pt(15)
 
     def ignore_nested_tables(self, tables_soup):
         """
