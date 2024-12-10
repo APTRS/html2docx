@@ -11,6 +11,10 @@ user can pass existing document object as arg
 (if they want to manage rest of document themselves)
 
 How to deal with block level style applied over table elements? e.g. text align
+
+Original : https://github.com/pqzx/html2docx
+Modified : https://github.com/APTRS/html2docx
+The lib is modified to add support for more tags required for APTRS project
 """
 import re, argparse
 import io, os
@@ -227,6 +231,12 @@ class HtmlToDocx(HTMLParser):
             # TODO handle non px units
 
     def add_styles_to_run(self, style):
+        if 'font-size' in style:
+            font_size = style['font-size']
+            px_to_pt = 1.333
+            pt_size = float(font_size.replace('px', '')) / px_to_pt
+            self.run.font.size = Pt(pt_size)
+
         if 'color' in style:
             if 'rgb' in style['color']:
                 color = re.sub(r'[a-z()]+', '', style['color'])
